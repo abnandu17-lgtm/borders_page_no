@@ -255,7 +255,7 @@ def clean_pdf(pdf_bytes):
 # DRAW BORDER
 # =========================================================
 
-def draw_border(page, margin_mm):
+def draw_border(page, margin_mm, border_design):
 
     margin = pt(margin_mm)
 
@@ -266,11 +266,131 @@ def draw_border(page, margin_mm):
         page.rect.height - margin
     )
 
-    page.draw_rect(
-        border,
-        color=(0, 0, 0),
-        width=0.8
-    )
+    # =====================================================
+    # DESIGN 1 — SINGLE LINE
+    # =====================================================
+
+    if border_design == "Single Line":
+
+        page.draw_rect(
+            border,
+            color=(0, 0, 0),
+            width=0.8
+        )
+
+    # =====================================================
+    # DESIGN 2 — DOUBLE LINE
+    # =====================================================
+
+    elif border_design == "Double Line":
+
+        page.draw_rect(
+            border,
+            color=(0, 0, 0),
+            width=0.8
+        )
+
+        inner = fitz.Rect(
+            margin + pt(3),
+            margin + pt(3),
+            page.rect.width - margin - pt(3),
+            page.rect.height - margin - pt(3)
+        )
+
+        page.draw_rect(
+            inner,
+            color=(0, 0, 0),
+            width=0.8
+        )
+
+    # =====================================================
+    # DESIGN 3 — THICK OUTER + THIN INNER
+    # =====================================================
+
+    elif border_design == "Thick Outer + Thin Inner":
+
+        page.draw_rect(
+            border,
+            color=(0, 0, 0),
+            width=2.2
+        )
+
+        inner = fitz.Rect(
+            margin + pt(4),
+            margin + pt(4),
+            page.rect.width - margin - pt(4),
+            page.rect.height - margin - pt(4)
+        )
+
+        page.draw_rect(
+            inner,
+            color=(0, 0, 0),
+            width=0.7
+        )
+
+    # =====================================================
+    # DESIGN 4 — TRIPLE LINE
+    # =====================================================
+
+    elif border_design == "Triple Line":
+
+        page.draw_rect(
+            border,
+            color=(0, 0, 0),
+            width=0.8
+        )
+
+        inner1 = fitz.Rect(
+            margin + pt(2.5),
+            margin + pt(2.5),
+            page.rect.width - margin - pt(2.5),
+            page.rect.height - margin - pt(2.5)
+        )
+
+        inner2 = fitz.Rect(
+            margin + pt(5),
+            margin + pt(5),
+            page.rect.width - margin - pt(5),
+            page.rect.height - margin - pt(5)
+        )
+
+        page.draw_rect(
+            inner1,
+            color=(0, 0, 0),
+            width=0.6
+        )
+
+        page.draw_rect(
+            inner2,
+            color=(0, 0, 0),
+            width=0.6
+        )
+
+    # =====================================================
+    # DESIGN 5 — DOTTED
+    # =====================================================
+
+    elif border_design == "Dotted":
+
+        page.draw_rect(
+            border,
+            color=(0, 0, 0),
+            width=0.8,
+            dashes="[1 3]"
+        )
+
+    # =====================================================
+    # DESIGN 6 — DASHED
+    # =====================================================
+
+    elif border_design == "Dashed":
+
+        page.draw_rect(
+            border,
+            color=(0, 0, 0),
+            width=0.8,
+            dashes="[6 4]"
+        )
 
 
 # =========================================================
@@ -476,7 +596,8 @@ def create_pdf(
 
             draw_border(
                 new_page,
-                settings["border_margin"]
+                settings["border_margin"],
+                settings["border_design"]
             )
 
         # ---------------------------------------------
@@ -620,6 +741,9 @@ def default_page_settings(total_pages):
             "page_number": True,
 
             "border_margin": 12,
+
+            # ADDED
+            "border_design": "Single Line",
 
             "title_position": "Above border",
             "department_position": "Below border",
@@ -774,6 +898,23 @@ if uploaded:
         value=12
     )
 
+    # =====================================================
+    # BORDER DESIGN — ADDED
+    # =====================================================
+
+    border_design = st.selectbox(
+        "Border Design",
+        [
+            "Single Line",
+            "Double Line",
+            "Thick Outer + Thin Inner",
+            "Triple Line",
+            "Dotted",
+            "Dashed"
+        ],
+        key="global_border_design"
+    )
+
     title = st.text_input(
         "Project Title",
         placeholder="Enter the title of the project"
@@ -876,6 +1017,11 @@ if uploaded:
 
             settings["border_margin"] = (
                 border_margin_default
+            )
+
+            # ADDED
+            settings["border_design"] = (
+                border_design
             )
 
             settings["title_position"] = (
@@ -1298,7 +1444,6 @@ if uploaded:
         "100% = original size. Lower values make the "
         "original PDF content smaller."
     )
-
 
     if st.button(
         "👁️ Preview Final PDF",
