@@ -15,6 +15,13 @@ st.set_page_config(
 )
 
 st.title("📄 PDF Formatter")
+
+# ADDED — TOP DESCRIPTION
+st.markdown(
+    "Format your PDF easily — remove old borders, add new borders, "
+    "customize pages, preview changes, and download the final PDF."
+)
+
 st.caption(
     "Clean the PDF, add the new format, preview every page, "
     "then customize individual pages."
